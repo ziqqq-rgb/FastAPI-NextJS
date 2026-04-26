@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useState } from "react";
+import { createContext, use, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -10,12 +10,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
-  const login = async (email, password) => {
+  const login = async (username, password) => {
     try {
       const formData = new FormData();
-      formData.append("email", email);
+      formData.append("username", username);
       formData.append("password", password);
-      const response = await axios.post("http://localhost:8000/api/login", formData, {
+      const response = await axios.post("http://localhost:8000/auth/token", formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.access_token}`;
       localStorage.setItem('token', response.data.access_token);
       setUser(response.data);
-      router.push();
+      router.push("/");
     } catch (error) {
       console.error("Login failed:", error);
     }
